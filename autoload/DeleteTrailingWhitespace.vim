@@ -45,12 +45,6 @@ function! DeleteTrailingWhitespace#IsSet()
 	silent! let l:isSet = ShowTrailingWhitespace#IsSet()
     elseif l:value ==# 'always' || l:value ==# '1'
 	let l:isSet = 1
-    elseif l:value ==# 'abort'
-	if DeleteTrailingWhitespace#HasTrailingWhitespace()
-	    throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (use ! to override)'
-	endif
-    elseif l:value ==# 'ask'
-	" ...
     else
 	throw 'ASSERT: Invalid value for ShowTrailingWhitespace: ' . string(l:value)
     endif
@@ -58,17 +52,35 @@ function! DeleteTrailingWhitespace#IsSet()
     return l:isSet
 endfunction
 
-function! DeleteTrailingWhitespace#InterceptWrite()
-    try
-	if DeleteTrailingWhitespace#IsSet()
-	    call DeleteTrailingWhitespace#Delete(1, line('$'))
+function! DeleteTrailingWhitespace#GetAction()
+    return (exists('b:DeleteTrailingWhitespace_Action') ? b:DeleteTrailingWhitespace_Action : g:DeleteTrailingWhitespace_Action)
+endfunction
+function! DeleteTrailingWhitespace#IsAction()
+    let l:action = DeleteTrailingWhitespace#GetAction()
+    if l:action ==# 'delete'
+	return 1
+    elseif l:action ==# 'abort'
+	if ! v:cmdbang && DeleteTrailingWhitespace#HasTrailingWhitespace()
+	    " XXX: Defining a no-op BufWriteCmd only comes into effect on the
+	    " next write, but does not affect the current one. Since we don't
+	    " want to install such an autocmd across the board, the best we can
+	    " do is throwing an exception to abort the write.
+	    " throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (use ! to override)'
+	    augroup DeleteTrailingWhitespaceAbortWrite
+		autocmd! BufWriteCmd <buffer> echomsg 'Trailing whitespace found, aborting write (use ! to override)' | autocmd! DeleteTrailingWhitespaceAbortWrite * <buffer>
+	    augroup END
 	endif
-    catch /DeleteTrailingWhitespace:/
-	let v:errmsg = substitute(v:exception, '^DeleteTrailingWhitespace:\s*', '', '')
-	echohl ErrorMsg
-	echomsg v:errmsg
-	echohl None
-    endtry
+    elseif l:action ==# 'ask'
+	" ...
+    else
+	throw 'ASSERT: Invalid value for ShowTrailingWhitespace_Action: ' . string(l:action)
+    endif
+endfunction
+
+function! DeleteTrailingWhitespace#InterceptWrite()
+    if DeleteTrailingWhitespace#IsSet() && DeleteTrailingWhitespace#IsAction()
+	call DeleteTrailingWhitespace#Delete(1, line('$'))
+    endif
 endfunction
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
