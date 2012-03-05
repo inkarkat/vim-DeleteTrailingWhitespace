@@ -9,6 +9,8 @@
 "
 " REVISION	DATE		REMARKS
 "	001	05-Mar-2012	file creation
+let s:save_cpo = &cpo
+set cpo&vim
 
 function! DeleteTrailingWhitespace#Pattern()
     let l:pattern = '\s\+$'
@@ -27,6 +29,9 @@ function! DeleteTrailingWhitespace#Delete( startLnum, endLnum )
 endfunction
 
 function! DeleteTrailingWhitespace#HasTrailingWhitespace()
+    " Note: In contrast to matchadd(), search() does consider the 'magic',
+    " 'ignorecase' and 'smartcase' settings. However, I don't think this is
+    " relevant for the whitespace mattern.
     return search(DeleteTrailingWhitespace#Pattern(), 'cnw')
 endfunction
 
@@ -53,7 +58,18 @@ function! DeleteTrailingWhitespace#IsSet()
 endfunction
 
 function! DeleteTrailingWhitespace#GetAction()
-    return (exists('b:DeleteTrailingWhitespace_Action') ? b:DeleteTrailingWhitespace_Action : g:DeleteTrailingWhitespace_Action)
+    return (exists('b:DeleteTrailingWhitespace_Action') ?
+    \	b:DeleteTrailingWhitespace_Action : g:DeleteTrailingWhitespace_Action)
+endfunction
+function! s:RecallResponse()
+    " For the response, the global settings takes precedence over the local one.
+    if exists('g:DeleteTrailingWhitespace_Response')
+	return g:DeleteTrailingWhitespace_Response + 3
+    elseif exists('b:DeleteTrailingWhitespace_Response')
+	return b:DeleteTrailingWhitespace_Response + 1
+    else
+	return -1
+    endif
 endfunction
 function! DeleteTrailingWhitespace#IsAction()
     let l:action = DeleteTrailingWhitespace#GetAction()
@@ -65,13 +81,33 @@ function! DeleteTrailingWhitespace#IsAction()
 	    " next write, but does not affect the current one. Since we don't
 	    " want to install such an autocmd across the board, the best we can
 	    " do is throwing an exception to abort the write.
-	    " throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (use ! to override)'
-	    augroup DeleteTrailingWhitespaceAbortWrite
-		autocmd! BufWriteCmd <buffer> echomsg 'Trailing whitespace found, aborting write (use ! to override)' | autocmd! DeleteTrailingWhitespaceAbortWrite * <buffer>
-	    augroup END
+	    throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (use ! to override, or :DeleteTrailingWhitespace to eradicate)'
 	endif
     elseif l:action ==# 'ask'
-	" ...
+	if v:cmdbang || ! DeleteTrailingWhitespace#HasTrailingWhitespace()
+	    return 0
+	endif
+
+	let l:recalledResponse = s:RecallResponse()
+	let l:response = (l:recalledResponse == -1 ?
+	\   confirm('Trailing whitespace found, delete it?', "&No\n&Yes\nNever\nAlways\n&Cancel write", 1, 'Question') :
+	\   l:recalledResponse
+	\)
+	if l:response == 1
+	    let b:DeleteTrailingWhitespace_Response = 0
+	    return 0
+	elseif l:response == 2
+	    let b:DeleteTrailingWhitespace_Response = 1
+	    return 1
+	elseif l:response == 3
+	    let g:DeleteTrailingWhitespace_Response = 0
+	    return 0
+	elseif l:response == 4
+	    let g:DeleteTrailingWhitespace_Response = 1
+	    return 1
+	else
+	    throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (use ! to override, or :DeleteTrailingWhitespace to eradicate)'
+	endif
     else
 	throw 'ASSERT: Invalid value for ShowTrailingWhitespace_Action: ' . string(l:action)
     endif
@@ -83,4 +119,6 @@ function! DeleteTrailingWhitespace#InterceptWrite()
     endif
 endfunction
 
+let &cpo = s:save_cpo
+unlet s:save_cpo
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
