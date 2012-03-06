@@ -64,9 +64,9 @@ endfunction
 function! s:RecallResponse()
     " For the response, the global settings takes precedence over the local one.
     if exists('g:DeleteTrailingWhitespace_Response')
-	return g:DeleteTrailingWhitespace_Response + 3
+	return g:DeleteTrailingWhitespace_Response + 5
     elseif exists('b:DeleteTrailingWhitespace_Response')
-	return b:DeleteTrailingWhitespace_Response + 1
+	return b:DeleteTrailingWhitespace_Response + 3
     else
 	return -1
     endif
@@ -90,19 +90,23 @@ function! DeleteTrailingWhitespace#IsAction()
 
 	let l:recalledResponse = s:RecallResponse()
 	let l:response = (l:recalledResponse == -1 ?
-	\   confirm('Trailing whitespace found, delete it?', "&No\n&Yes\nNever\nAlways\n&Cancel write", 1, 'Question') :
+	\   confirm('Trailing whitespace found, delete it?', "&No\n&Yes\nNe&ver\n&Always\nNowhere\nAnywhere\n&Cancel write", 1, 'Question') :
 	\   l:recalledResponse
 	\)
-	if l:response == 1
-	    let b:DeleteTrailingWhitespace_Response = 0
+	if     l:response == 1
 	    return 0
 	elseif l:response == 2
-	    let b:DeleteTrailingWhitespace_Response = 1
 	    return 1
 	elseif l:response == 3
-	    let g:DeleteTrailingWhitespace_Response = 0
+	    let b:DeleteTrailingWhitespace_Response = 0
 	    return 0
 	elseif l:response == 4
+	    let b:DeleteTrailingWhitespace_Response = 1
+	    return 1
+	elseif l:response == 5
+	    let g:DeleteTrailingWhitespace_Response = 0
+	    return 0
+	elseif l:response == 6
 	    let g:DeleteTrailingWhitespace_Response = 1
 	    return 1
 	else
