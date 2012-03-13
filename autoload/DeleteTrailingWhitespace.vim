@@ -1,6 +1,7 @@
 " DeleteTrailingWhitespace.vim: Delete unwanted whitespace at the end of lines.
 "
 " DEPENDENCIES:
+"   - ShowTrailingWhitespace.vim autoload script (optional)
 "
 " Copyright: (C) 2012 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
