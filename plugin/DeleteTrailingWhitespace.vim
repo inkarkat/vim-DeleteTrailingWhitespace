@@ -17,18 +17,25 @@ if exists('g:loaded_DeleteTrailingWhitespace') || (v:version < 700)
 endif
 let g:loaded_DeleteTrailingWhitespace = 1
 
+"- configuration ---------------------------------------------------------------
+
 if ! exists('g:DeleteTrailingWhitespace')
     let g:DeleteTrailingWhitespace = 'highlighted'
 endif
 if ! exists('g:DeleteTrailingWhitespace_Action')
-    let g:DeleteTrailingWhitespace_Action = 'delete'
+    let g:DeleteTrailingWhitespace_Action = 'abort'
 endif
 
 
+"- autocmds --------------------------------------------------------------------
+
 augroup DeleteTrailingWhitespace
     autocmd!
-    autocmd BufWritePre * call DeleteTrailingWhitespace#InterceptWrite()
+    autocmd BufWritePre * try | call DeleteTrailingWhitespace#InterceptWrite() | catch /^DeleteTrailingWhitespace:/ | echoerr substitute(v:exception, '^DeleteTrailingWhitespace:\s*', '', '') | endtry
 augroup END
+
+
+"- commands --------------------------------------------------------------------
 
 command! -range=% DeleteTrailingWhitespace call DeleteTrailingWhitespace#Delete(<line1>, <line2>)
 
