@@ -9,6 +9,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	002     14-Mar-2012     Support turning off highlighting of trailing
+"				whitespace when the user answers the query with
+"				"Never" or "Nowhere".
 "	001	05-Mar-2012	file creation
 
 " Avoid installing twice or when in unsupported Vim version.
@@ -25,6 +28,10 @@ endif
 if ! exists('g:DeleteTrailingWhitespace_Action')
     let g:DeleteTrailingWhitespace_Action = 'abort'
 endif
+if ! exists('g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting')
+    let g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting = 1
+endif
+
 
 
 "- autocmds --------------------------------------------------------------------
