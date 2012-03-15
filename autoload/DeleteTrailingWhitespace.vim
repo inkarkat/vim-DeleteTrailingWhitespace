@@ -9,6 +9,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"	002     14-Mar-2012     Support turning off highlighting of trailing
+"				whitespace when the user answers the query with
+"				"Never" or "Nowhere".
 "	001	05-Mar-2012	file creation
 let s:save_cpo = &cpo
 set cpo&vim
@@ -100,12 +103,22 @@ function! DeleteTrailingWhitespace#IsAction()
 	    return 1
 	elseif l:response == 3
 	    let b:DeleteTrailingWhitespace_Response = 0
+
+	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+		silent! call ShowTrailingWhitespace#Set(0, 0)
+	    endif
+
 	    return 0
 	elseif l:response == 4
 	    let b:DeleteTrailingWhitespace_Response = 1
 	    return 1
 	elseif l:response == 5
 	    let g:DeleteTrailingWhitespace_Response = 0
+
+	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+		silent! call ShowTrailingWhitespace#Set(0, 1)
+	    endif
+
 	    return 0
 	elseif l:response == 6
 	    let g:DeleteTrailingWhitespace_Response = 1
