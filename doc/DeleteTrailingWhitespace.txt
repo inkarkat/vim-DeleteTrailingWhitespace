@@ -41,8 +41,9 @@ companion |JumpToTrailingWhitespace.vim| plugin (vimscript #0000).
 ==============================================================================
 USAGE					      *DeleteTrailingWhitespace-usage*
 						   *:DeleteTrailingWhitespace*
-:[range]DeleteTrailingWhitespace	Delete all trailing whitespace in the
-					current buffer or [range].
+:[range]DeleteTrailingWhitespace
+			Delete all trailing whitespace in the current buffer
+			or [range].
 
 ==============================================================================
 INSTALLATION			       *DeleteTrailingWhitespace-installation*
@@ -83,6 +84,14 @@ To ask whether to remove or keep the whitespace (either for the current
 buffer, or all buffers in the entire Vim session), use: >
     let g:DeleteTrailingWhitespace_Action = 'ask'
 <
+			*g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting*
+When the plugin is configured to ask the user, and she answers the query with
+"Never" or "Nowhere", the |ShowTrailingWhitespace.vim| highlighting is turned
+off automatically; when you ignore the stuff, there's typically no sense in
+still highlighting it. If you don't want that, use: >
+    let g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting = 0
+<
+
 	      *b:DeleteTrailingWhitespace* *b:DeleteTrailingWhitespace_Action*
 The global detection and processing behavior can be changed for individual
 buffers by setting the corresponding buffer-local variables.
