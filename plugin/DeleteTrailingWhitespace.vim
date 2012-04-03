@@ -9,7 +9,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"	002     14-Mar-2012     Support turning off highlighting of trailing
+"   1.00.002	14-Mar-2012	Support turning off highlighting of trailing
 "				whitespace when the user answers the query with
 "				"Never" or "Nowhere".
 "	001	05-Mar-2012	file creation
