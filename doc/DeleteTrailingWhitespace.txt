@@ -69,6 +69,12 @@ CONFIGURATION			      *DeleteTrailingWhitespace-configuration*
 
 For a permanent configuration, put the following commands into your |vimrc|:
 
+					   *DeleteTrailingWhitespace-mappings*
+This plugin doesn't come with predefined mappings, but if you want some, you
+can trivially define them yourself: >
+    nnoremap <Leader>d$ :<C-u>%DeleteTrailingWhitespace<CR>
+    vnoremap <Leader>d$ :DeleteTrailingWhitespace<CR>
+<
 						  *g:DeleteTrailingWhitespace*
 By default, trailing whitespace is processed before writing the buffer when it
 has been detected and is currently being highlighted by the
@@ -109,6 +115,9 @@ IDEAS					      *DeleteTrailingWhitespace-ideas*
 
 ==============================================================================
 HISTORY					    *DeleteTrailingWhitespace-history*
+
+1.01	04-Apr-2012
+Define command with -bar so that it can be chained.
 
 1.00	16-Mar-2012
 First published version.
