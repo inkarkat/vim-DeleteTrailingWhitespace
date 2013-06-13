@@ -9,6 +9,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.04.005	28-Dec-2012	Minor: Correct lnum for no-modifiable buffer
+"				check.
 "   1.03.004	19-Apr-2012	Handle readonly and nomodifiable buffers by
 "				printing just the warning / error, without
 "				the multi-line function error.
@@ -58,6 +60,6 @@ endfunction
 	endif
 	unlet s:isModified
     endfunction
-command! -bar -range=% DeleteTrailingWhitespace call <SID>Before()<Bar>call setline(1, getline(1))<Bar>call <SID>After()<Bar>call DeleteTrailingWhitespace#Delete(<line1>, <line2>)
+command! -bar -range=% DeleteTrailingWhitespace call <SID>Before()<Bar>call setline(<line1>, getline(<line1>))<Bar>call <SID>After()<Bar>call DeleteTrailingWhitespace#Delete(<line1>, <line2>)
 
 " vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
