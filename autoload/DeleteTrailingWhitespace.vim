@@ -3,12 +3,14 @@
 " DEPENDENCIES:
 "   - ShowTrailingWhitespace.vim autoload script (optional)
 "
-" Copyright: (C) 2012 Ingo Karkat
+" Copyright: (C) 2012-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.04.004	07-Aug-2013	Minor: Change error message wording slightly to
+"				be more consistent with Vim's original.
 "   1.02.003	14-Apr-2012	FIX: Avoid polluting search history.
 "   1.00.002	14-Mar-2012	Support turning off highlighting of trailing
 "				whitespace when the user answers the query with
@@ -87,7 +89,7 @@ function! DeleteTrailingWhitespace#IsAction()
 	    " next write, but does not affect the current one. Since we don't
 	    " want to install such an autocmd across the board, the best we can
 	    " do is throwing an exception to abort the write.
-	    throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (use ! to override, or :DeleteTrailingWhitespace to eradicate)'
+	    throw 'DeleteTrailingWhitespace: Trailing whitespace found, aborting write (add ! to override, or :DeleteTrailingWhitespace to eradicate)'
 	endif
     elseif l:action ==# 'ask'
 	if v:cmdbang || ! DeleteTrailingWhitespace#HasTrailingWhitespace()
