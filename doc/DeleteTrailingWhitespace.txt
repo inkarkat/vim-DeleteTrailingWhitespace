@@ -123,6 +123,8 @@ HISTORY					    *DeleteTrailingWhitespace-history*
 1.04	RELEASEME
 - Minor: Make substitute() robust against 'ignorecase'.
 - Minor: Correct lnum for no-modifiable buffer check.
+- Handle local exception regular expressions that contain a "/" character.
+  This must be escaped for the :substitute/ command.
 
 1.03	19-Apr-2012
 Handle readonly and nomodifiable buffers by printing just the warning / error,
