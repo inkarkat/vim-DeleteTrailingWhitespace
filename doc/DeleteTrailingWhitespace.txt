@@ -120,7 +120,7 @@ IDEAS					      *DeleteTrailingWhitespace-ideas*
 ==============================================================================
 HISTORY					    *DeleteTrailingWhitespace-history*
 
-1.04	RELEASEME
+1.04	14-Dec-2013
 - Minor: Make substitute() robust against 'ignorecase'.
 - Minor: Correct lnum for no-modifiable buffer check.
 - Handle local exception regular expressions that contain a "/" character.
