@@ -9,6 +9,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.04.005	03-Dec-2013	Handle local exception regular expressions that
+"				contain a "/" character. This must be escaped
+"				for the :substitute/ command.
 "   1.04.004	07-Aug-2013	Minor: Change error message wording slightly to
 "				be more consistent with Vim's original.
 "   1.02.003	14-Apr-2012	FIX: Avoid polluting search history.
@@ -31,7 +34,7 @@ endfunction
 
 function! DeleteTrailingWhitespace#Delete( startLnum, endLnum )
     let l:save_cursor = getpos('.')
-    execute  a:startLnum . ',' . a:endLnum . 'substitute/' . DeleteTrailingWhitespace#Pattern() . '//e'
+    execute  a:startLnum . ',' . a:endLnum . 'substitute/' . escape(DeleteTrailingWhitespace#Pattern(), '/') . '//e'
     call histdel('search', -1) " @/ isn't changed by a function, cp. |function-search-undo|
     call setpos('.', l:save_cursor)
 endfunction
@@ -39,7 +42,8 @@ endfunction
 function! DeleteTrailingWhitespace#HasTrailingWhitespace()
     " Note: In contrast to matchadd(), search() does consider the 'magic',
     " 'ignorecase' and 'smartcase' settings. However, I don't think this is
-    " relevant for the whitespace mattern.
+    " relevant for the whitespace pattern, and local exception regular
+    " expressions can / should force this via \c / \C.
     return search(DeleteTrailingWhitespace#Pattern(), 'cnw')
 endfunction
 
