@@ -56,10 +56,10 @@ USAGE					      *DeleteTrailingWhitespace-usage*
 INSTALLATION			       *DeleteTrailingWhitespace-installation*
 
 This script is packaged as a |vimball|. If you have the "gunzip" decompressor
-in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
 vimball or via the |:UseVimball| command. >
-    vim DeleteTrailingWhitespace.vba.gz
+    vim DeleteTrailingWhitespace*.vmb.gz
     :so %
 To uninstall, use the |:RmVimball| command.
 
@@ -121,6 +121,11 @@ IDEAS					      *DeleteTrailingWhitespace-ideas*
 
 ==============================================================================
 HISTORY					    *DeleteTrailingWhitespace-history*
+
+1.05	RELEASEME
+- Corner case: Avoid "E21: Cannot make changes, 'modifiable' is off" on a
+  nomodifiable buffer when g:DeleteTrailingWhitespace_Action = 'delete', and
+  instead just show a warning. Thanks to Enno Nagel for raising this issue.
 
 1.04	14-Dec-2013
 - Minor: Make substitute() robust against 'ignorecase'.
