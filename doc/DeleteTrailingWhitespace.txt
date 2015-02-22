@@ -122,7 +122,7 @@ IDEAS					      *DeleteTrailingWhitespace-ideas*
 ==============================================================================
 HISTORY					    *DeleteTrailingWhitespace-history*
 
-1.05	RELEASEME
+1.05	12-Dec-2014
 - Corner case: Avoid "E21: Cannot make changes, 'modifiable' is off" on a
   nomodifiable buffer when g:DeleteTrailingWhitespace_Action = 'delete', and
   instead just show a warning. Thanks to Enno Nagel for raising this issue.
