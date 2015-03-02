@@ -122,7 +122,7 @@ IDEAS					      *DeleteTrailingWhitespace-ideas*
 ==============================================================================
 HISTORY					    *DeleteTrailingWhitespace-history*
 
-1.06	RELEASEME
+1.06	24-Feb-2015
 - FIX: Warning for nomodifiable buffer does not consider buffer-local
   b:DeleteTrailingWhitespace_Action (after version 1.05).
 
