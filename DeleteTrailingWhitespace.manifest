@@ -1,0 +1,3 @@
+autoload/DeleteTrailingWhitespace.vim
+plugin/DeleteTrailingWhitespace.vim
+doc/DeleteTrailingWhitespace.txt
