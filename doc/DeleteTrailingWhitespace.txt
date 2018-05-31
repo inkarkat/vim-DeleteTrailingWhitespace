@@ -89,7 +89,8 @@ To turn off the automatic deletion of trailing whitespace, use: >
     let g:DeleteTrailingWhitespace = 0
 If you want to eradicate all trailing whitespace all the time, use: >
     let g:DeleteTrailingWhitespace = 1
-<
+Also see the following configuration option to turn off the confirmation
+queries in case you want unconditional, fully automatic removal.
 					   *g:DeleteTrailingWhitespace_Action*
 For processing, the default action is aborting the write, unless ! is given.
 To automatically eradicate the trailing whitespace, use: >
