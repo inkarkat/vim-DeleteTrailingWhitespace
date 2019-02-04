@@ -3,7 +3,7 @@
 " DEPENDENCIES:
 "   - ShowTrailingWhitespace.vim autoload script (optional)
 "
-" Copyright: (C) 2012-2015 Ingo Karkat
+" Copyright: (C) 2012-2019 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -76,11 +76,8 @@ function! DeleteTrailingWhitespace#IsSet()
     return l:isSet
 endfunction
 
-" Note: Could use ingo#plugin#setting#GetBufferLocal(), but avoid dependency to
-" ingo-library for now.
-function! DeleteTrailingWhitespace#GetAction()
-    return (exists('b:DeleteTrailingWhitespace_Action') ?
-    \	b:DeleteTrailingWhitespace_Action : g:DeleteTrailingWhitespace_Action)
+function! s:GetAction()
+    return ingo#plugin#setting#GetWindowLocal('DeleteTrailingWhitespace_Action')
 endfunction
 function! s:RecallResponse()
     " For the response, the global settings takes precedence over the local one.
@@ -93,7 +90,7 @@ function! s:RecallResponse()
     endif
 endfunction
 function! DeleteTrailingWhitespace#IsAction()
-    let l:action = DeleteTrailingWhitespace#GetAction()
+    let l:action = s:GetAction()
     if l:action ==# 'delete'
 	return 1
     elseif l:action ==# 'abort'
@@ -150,7 +147,7 @@ endfunction
 
 function! DeleteTrailingWhitespace#InterceptWrite()
     if DeleteTrailingWhitespace#IsSet() && DeleteTrailingWhitespace#IsAction()
-	if ! &l:modifiable && DeleteTrailingWhitespace#GetAction() ==# 'delete'
+	if ! &l:modifiable && s:GetAction() ==# 'delete'
 	    call ingo#msg#WarningMsg('Cannot automatically delete trailing whitespace, buffer is not modifiable')
 	    sleep 1 " Need a delay as the message is overwritten by :write.
 	    return
