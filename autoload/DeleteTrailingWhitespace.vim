@@ -82,11 +82,11 @@ endfunction
 function! s:RecallResponse()
     " For the response, the global settings takes precedence over the local one.
     if exists('g:DeleteTrailingWhitespace_Response')
-	return g:DeleteTrailingWhitespace_Response + 5
+	return (g:DeleteTrailingWhitespace_Response ? 'Nowhere' : 'Anywhere')
     elseif exists('b:DeleteTrailingWhitespace_Response')
-	return b:DeleteTrailingWhitespace_Response + 3
+	return (b:DeleteTrailingWhitespace_Response ? 'Never' : 'Always')
     else
-	return -1
+	return ''
     endif
 endfunction
 function! DeleteTrailingWhitespace#IsAction()
@@ -106,16 +106,17 @@ function! DeleteTrailingWhitespace#IsAction()
 	    return 0
 	endif
 
-	let l:recalledResponse = s:RecallResponse()
-	let l:response = (l:recalledResponse == -1 ?
-	\   confirm('Trailing whitespace found, delete it?', "&No\n&Yes\nNe&ver\n&Always\nNowhere\nAnywhere\n&Cancel write", 1, 'Question') :
-	\   l:recalledResponse
-	\)
-	if     l:response == 1
+	let l:response = s:RecallResponse()
+	if empty(l:response)
+	    let l:options = ['&No', '&Yes', 'Ne&ver', '&Always', 'Nowhere', 'Anywhere', '&Cancel write']
+
+	    let l:response = ingo#query#ConfirmAsText('Trailing whitespace found, delete it?', l:options, 1, 'Question')
+	endif
+	if     l:response ==# 'No'
 	    return 0
-	elseif l:response == 2
+	elseif l:response ==# 'Yes'
 	    return 1
-	elseif l:response == 3
+	elseif l:response ==# 'Never'
 	    let b:DeleteTrailingWhitespace_Response = 0
 
 	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
@@ -123,10 +124,10 @@ function! DeleteTrailingWhitespace#IsAction()
 	    endif
 
 	    return 0
-	elseif l:response == 4
+	elseif l:response ==# 'Always'
 	    let b:DeleteTrailingWhitespace_Response = 1
 	    return 1
-	elseif l:response == 5
+	elseif l:response ==# 'Nowhere'
 	    let g:DeleteTrailingWhitespace_Response = 0
 
 	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
@@ -134,7 +135,7 @@ function! DeleteTrailingWhitespace#IsAction()
 	    endif
 
 	    return 0
-	elseif l:response == 6
+	elseif l:response ==# 'Anywhere'
 	    let g:DeleteTrailingWhitespace_Response = 1
 	    return 1
 	else
