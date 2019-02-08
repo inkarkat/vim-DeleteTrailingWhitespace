@@ -3,12 +3,20 @@
 " DEPENDENCIES:
 "   - DeleteTrailingWhitespace.vim autoload script.
 "
-" Copyright: (C) 2012 Ingo Karkat
+" Copyright: (C) 2012-2019 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.10.007	09-Feb-2019	CHG:
+"                               g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+"                               now is a List of possible responses that if
+"                               missing will keep the highlighting for that
+"                               particular response.
+"                               CHG: Change default for
+"                               g:DeleteTrailingWhitespace_Action from "abort"
+"                               to "ask".
 "   1.04.006	14-Jun-2013	Minor: Make substitute() robust against
 "				'ignorecase'.
 "   1.04.005	28-Dec-2012	Minor: Correct lnum for no-modifiable buffer
@@ -35,10 +43,16 @@ if ! exists('g:DeleteTrailingWhitespace')
     let g:DeleteTrailingWhitespace = 'highlighted'
 endif
 if ! exists('g:DeleteTrailingWhitespace_Action')
-    let g:DeleteTrailingWhitespace_Action = 'abort'
+    let g:DeleteTrailingWhitespace_Action = 'ask'
 endif
 if ! exists('g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting')
-    let g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting = 1
+    " Note: "Never ever" (and "Never ever recalled") are excluded here (so it
+    " will keep the highlighting) because turning off both highlighting and
+    " persisting the choice can be done via "Never ever highlight" (though this
+    " only persists on ShowTrailingWhitespace.vim's side, and not also for
+    " DeleteTrailingWhitespace, but as we observe the former's highlighting
+    " state by default, this should be enough.
+    let g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting = ['No', 'Never', 'Never ever highlight', 'Nowhere']
 endif
 
 
