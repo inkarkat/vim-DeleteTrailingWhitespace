@@ -10,8 +10,11 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
-"   1.10.009	09-Feb-2019	Change "Never ever" to "Never ever highlight or
-"                               delete" to be more precise what's happening.
+"   1.10.009	09-Feb-2019	Change "Never ever" to "Never ever highlight" to
+"                               be more precise what's happening.
+"                               Add "Forever" and "Never ever" choices that
+"                               persist the response for the current file across
+"                               Vim session.
 "   1.10.008	05-Feb-2019	Use ingo-library's
 "                               ingo#plugin#setting#GetBufferLocal().
 "                               DeleteTrailingWhitespace#Get() and make
@@ -86,6 +89,9 @@ function! DeleteTrailingWhitespace#IsSet()
     return l:isSet
 endfunction
 
+function! s:GetFilespec()
+    return ingo#fs#path#Canonicalize(expand('%:p'))
+endfunction
 function! s:GetAction()
     return ingo#plugin#setting#GetWindowLocal('DeleteTrailingWhitespace_Action')
 endfunction
@@ -95,8 +101,28 @@ function! s:RecallResponse()
 	return (g:DeleteTrailingWhitespace_Response ? 'Nowhere' : 'Anywhere')
     elseif exists('b:DeleteTrailingWhitespace_Response')
 	return (b:DeleteTrailingWhitespace_Response ? 'Never' : 'Always')
-    else
-	return ''
+    elseif exists('g:DELETETRAILINGWHITESPACE_RESPONSES')
+	let l:persistedResponses = ingo#plugin#persistence#Load('DELETETRAILINGWHITESPACE_RESPONSES', {})
+	let l:filespec = s:GetFilespec()
+	if has_key(l:persistedResponses, l:filespec)
+	    return (l:persistedResponses[l:filespec] ? 'Never' : 'Always')
+	endif
+    endif
+
+    return ''
+endfunction
+function! s:NeverDelete()
+    let b:DeleteTrailingWhitespace_Response = 0
+
+    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+	silent! call ShowTrailingWhitespace#Set(0, 0)
+    endif
+
+    return 0
+endfunction
+function! s:PersistChoice( isDelete )
+    if ! ingo#plugin#persistence#Add('DELETETRAILINGWHITESPACE_RESPONSES', s:GetFilespec(), a:isDelete)
+	call ingo#msg#WarningMsg("Failed to persist response; the choice will only affect the current Vim session")
     endif
 endfunction
 function! DeleteTrailingWhitespace#IsAction()
@@ -119,8 +145,11 @@ function! DeleteTrailingWhitespace#IsAction()
 	let l:response = s:RecallResponse()
 	if empty(l:response)
 	    let l:choices = ['&No', '&Yes', 'Ne&ver', '&Always', 'Nowhere', 'Anywhere']
+	    if ingo#plugin#persistence#CanPersist() && ! empty(bufname(''))
+		let l:choices += ['&Forever', 'Never &ever']
+	    endif
 	    if exists('g:ShowTrailingWhitespace') && g:ShowTrailingWhitespace && ingo#plugin#persistence#CanPersist()
-		let l:choices += ['Never ever &highlight or delete']
+		let l:choices += ['Never ever &highlight']
 	    endif
 	    call add(l:choices, '&Cancel write')
 
@@ -131,14 +160,11 @@ function! DeleteTrailingWhitespace#IsAction()
 	elseif l:response ==# 'Yes'
 	    return 1
 	elseif l:response ==# 'Never'
-	    let b:DeleteTrailingWhitespace_Response = 0
-
-	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
-		silent! call ShowTrailingWhitespace#Set(0, 0)
-	    endif
-
-	    return 0
-	elseif l:response ==# 'Never ever highlight or delete'
+	    return s:NeverDelete()
+	elseif l:response ==# 'Never ever'
+	    call s:PersistChoice(0)
+	    return s:NeverDelete()
+	elseif l:response ==# 'Never ever highlight'
 	    let b:DeleteTrailingWhitespace_Response = 0
 
 	    silent! call ShowTrailingWhitespace#Filter#BlacklistFile(1)
@@ -151,6 +177,10 @@ function! DeleteTrailingWhitespace#IsAction()
 
 	    return 0
 	elseif l:response ==# 'Always'
+	    let b:DeleteTrailingWhitespace_Response = 1
+	    return 1
+	elseif l:response ==# 'Forever'
+	    call s:PersistChoice(1)
 	    let b:DeleteTrailingWhitespace_Response = 1
 	    return 1
 	elseif l:response ==# 'Nowhere'
