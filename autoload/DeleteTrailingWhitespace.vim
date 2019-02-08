@@ -15,6 +15,11 @@
 "                               Add "Forever" and "Never ever" choices that
 "                               persist the response for the current file across
 "                               Vim session.
+"                               Use special "... recalled" responses for lookups
+"                               from persisted values.
+"                               Add s:IsChoiceAffectsHighlighting(), pass it the
+"                               current response, so that the switch can be made
+"                               based on it.
 "   1.10.008	05-Feb-2019	Use ingo-library's
 "                               ingo#plugin#setting#GetBufferLocal().
 "                               DeleteTrailingWhitespace#Get() and make
@@ -105,16 +110,22 @@ function! s:RecallResponse()
 	let l:persistedResponses = ingo#plugin#persistence#Load('DELETETRAILINGWHITESPACE_RESPONSES', {})
 	let l:filespec = s:GetFilespec()
 	if has_key(l:persistedResponses, l:filespec)
-	    return (l:persistedResponses[l:filespec] ? 'Never' : 'Always')
+	    return (l:persistedResponses[l:filespec] ? 'Forever recalled' : 'Never ever recalled')
 	endif
     endif
 
     return ''
 endfunction
-function! s:NeverDelete()
+function! s:IsChoiceAffectsHighlighting( response )
+    " Compatibility: The empty check ensures we handle the previous
+    " configuration value of 0 as well as the new List of responses.
+    return ! (empty(g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting) ||
+    \   (index(g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting, a:response) == -1))
+endfunction
+function! s:NeverDelete( response )
     let b:DeleteTrailingWhitespace_Response = 0
 
-    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+    if s:IsChoiceAffectsHighlighting(a:response)
 	silent! call ShowTrailingWhitespace#Set(0, 0)
     endif
 
@@ -160,16 +171,18 @@ function! DeleteTrailingWhitespace#IsAction()
 	elseif l:response ==# 'Yes'
 	    return 1
 	elseif l:response ==# 'Never'
-	    return s:NeverDelete()
+	    return s:NeverDelete(l:response)
 	elseif l:response ==# 'Never ever'
 	    call s:PersistChoice(0)
-	    return s:NeverDelete()
+	    return s:NeverDelete(l:response)
+	elseif l:response ==# 'Never ever recalled'
+	    return s:NeverDelete(l:response)
 	elseif l:response ==# 'Never ever highlight'
 	    let b:DeleteTrailingWhitespace_Response = 0
 
 	    silent! call ShowTrailingWhitespace#Filter#BlacklistFile(1)
 
-	    if ! g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+	    if ! s:IsChoiceAffectsHighlighting(l:response)
 		" Above command also disables highlighting; we need to
 		" explicitly undo this if the user doesn't want it.
 		silent! call ShowTrailingWhitespace#Set(1, 0)
@@ -183,10 +196,13 @@ function! DeleteTrailingWhitespace#IsAction()
 	    call s:PersistChoice(1)
 	    let b:DeleteTrailingWhitespace_Response = 1
 	    return 1
+	elseif l:response ==# 'Forever recalled'
+	    let b:DeleteTrailingWhitespace_Response = 1
+	    return 1
 	elseif l:response ==# 'Nowhere'
 	    let g:DeleteTrailingWhitespace_Response = 0
 
-	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+	    if s:IsChoiceAffectsHighlighting(l:response)
 		silent! call ShowTrailingWhitespace#Set(0, 1)
 	    endif
 
