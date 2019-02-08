@@ -10,6 +10,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.10.009	09-Feb-2019	Change "Never ever" to "Never ever highlight or
+"                               delete" to be more precise what's happening.
 "   1.10.008	05-Feb-2019	Use ingo-library's
 "                               ingo#plugin#setting#GetBufferLocal().
 "                               DeleteTrailingWhitespace#Get() and make
@@ -118,7 +120,7 @@ function! DeleteTrailingWhitespace#IsAction()
 	if empty(l:response)
 	    let l:choices = ['&No', '&Yes', 'Ne&ver', '&Always', 'Nowhere', 'Anywhere']
 	    if exists('g:ShowTrailingWhitespace') && g:ShowTrailingWhitespace && ingo#plugin#persistence#CanPersist()
-		let l:choices += ['Never &ever']
+		let l:choices += ['Never ever &highlight or delete']
 	    endif
 	    call add(l:choices, '&Cancel write')
 
@@ -136,7 +138,7 @@ function! DeleteTrailingWhitespace#IsAction()
 	    endif
 
 	    return 0
-	elseif l:response ==# 'Never ever'
+	elseif l:response ==# 'Never ever highlight or delete'
 	    let b:DeleteTrailingWhitespace_Response = 0
 
 	    silent! call ShowTrailingWhitespace#Filter#BlacklistFile(1)
