@@ -1,7 +1,8 @@
 " DeleteTrailingWhitespace.vim: Delete unwanted whitespace at the end of lines.
 "
 " DEPENDENCIES:
-"   - ShowTrailingWhitespace.vim autoload script (optional)
+"   - ingo-library.vim plugin
+"   - ShowTrailingWhitespace.vim plugin (optional)
 "
 " Copyright: (C) 2012-2019 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -9,6 +10,16 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.10.008	05-Feb-2019	Use ingo-library's
+"                               ingo#plugin#setting#GetBufferLocal().
+"                               DeleteTrailingWhitespace#Get() and make
+"                               DeleteTrailingWhitespace#GetAction()
+"                               script-local. Use ingo#query#ConfirmAsText() to
+"                               be able to replace the choice numbers with the
+"                               actual chosen text.
+"                               ENH: Add "Never ever" choice that leverages
+"                               ShowTrailingWhitespace.vim's new persistence
+"                               feature.
 "   1.06.007	23-Feb-2015	FIX: Warning for nomodifiable buffer does not
 "				consider buffer-local
 "				b:DeleteTrailingWhitespace_Action.
@@ -54,12 +65,9 @@ function! DeleteTrailingWhitespace#HasTrailingWhitespace()
     return search(DeleteTrailingWhitespace#Pattern(), 'cnw')
 endfunction
 
-function! DeleteTrailingWhitespace#Get()
-    return (exists('b:DeleteTrailingWhitespace') ? b:DeleteTrailingWhitespace : g:DeleteTrailingWhitespace)
-endfunction
 function! DeleteTrailingWhitespace#IsSet()
     let l:isSet = 0
-    let l:value = DeleteTrailingWhitespace#Get()
+    let l:value = ingo#plugin#setting#GetBufferLocal('DeleteTrailingWhitespace')
 
     if empty(l:value) || l:value ==# '0'
 	" Nothing to do.
@@ -108,9 +116,13 @@ function! DeleteTrailingWhitespace#IsAction()
 
 	let l:response = s:RecallResponse()
 	if empty(l:response)
-	    let l:options = ['&No', '&Yes', 'Ne&ver', '&Always', 'Nowhere', 'Anywhere', '&Cancel write']
+	    let l:choices = ['&No', '&Yes', 'Ne&ver', '&Always', 'Nowhere', 'Anywhere']
+	    if exists('g:ShowTrailingWhitespace') && g:ShowTrailingWhitespace && ingo#plugin#persistence#CanPersist()
+		let l:choices += ['Never &ever']
+	    endif
+	    call add(l:choices, '&Cancel write')
 
-	    let l:response = ingo#query#ConfirmAsText('Trailing whitespace found, delete it?', l:options, 1, 'Question')
+	    let l:response = ingo#query#ConfirmAsText('Trailing whitespace found, delete it?', l:choices, 1, 'Question')
 	endif
 	if     l:response ==# 'No'
 	    return 0
@@ -121,6 +133,18 @@ function! DeleteTrailingWhitespace#IsAction()
 
 	    if g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
 		silent! call ShowTrailingWhitespace#Set(0, 0)
+	    endif
+
+	    return 0
+	elseif l:response ==# 'Never ever'
+	    let b:DeleteTrailingWhitespace_Response = 0
+
+	    silent! call ShowTrailingWhitespace#Filter#BlacklistFile(1)
+
+	    if ! g:DeleteTrailingWhitespace_ChoiceAffectsHighlighting
+		" Above command also disables highlighting; we need to
+		" explicitly undo this if the user doesn't want it.
+		silent! call ShowTrailingWhitespace#Set(1, 0)
 	    endif
 
 	    return 0
