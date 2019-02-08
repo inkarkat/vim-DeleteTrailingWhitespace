@@ -128,9 +128,11 @@ IDEAS					      *DeleteTrailingWhitespace-ideas*
 HISTORY					    *DeleteTrailingWhitespace-history*
 
 1.10	RELEASEME
+- ENH: Add "Forever" and "Never ever" choices that persist the response for
+  the current file across Vim session.
 - ENH: If ShowTrailingWhitespace.vim (version 1.10 or higher) is installed,
-  offer a "Never ever" choice that turns off highlighting for the current
-  file persistently across Vim sessions.
+  offer a "Never ever highlight" choice that turns off highlighting for the
+  current file persistently across Vim sessions.
 - Add dependency to ingo-library (vimscript #4433).
   *** You need to separately install ingo-library (vimscript #4433) version
   1.036 (or higher)! ***
@@ -167,7 +169,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2012-2018 Ingo Karkat
+Copyright: (C) 2012-2019 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
