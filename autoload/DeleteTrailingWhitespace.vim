@@ -103,9 +103,9 @@ endfunction
 function! s:RecallResponse()
     " For the response, the global settings takes precedence over the local one.
     if exists('g:DeleteTrailingWhitespace_Response')
-	return (g:DeleteTrailingWhitespace_Response ? 'Nowhere' : 'Anywhere')
+	return (g:DeleteTrailingWhitespace_Response ? 'Anywhere' : 'Nowhere')
     elseif exists('b:DeleteTrailingWhitespace_Response')
-	return (b:DeleteTrailingWhitespace_Response ? 'Never' : 'Always')
+	return (b:DeleteTrailingWhitespace_Response ? 'Always' : 'Never')
     elseif exists('g:DELETETRAILINGWHITESPACE_RESPONSES')
 	let l:persistedResponses = ingo#plugin#persistence#Load('DELETETRAILINGWHITESPACE_RESPONSES', {})
 	let l:filespec = s:GetFilespec()
