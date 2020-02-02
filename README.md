@@ -98,7 +98,7 @@ If you want to eradicate all trailing whitespace all the time, use:
 Also see the following configuration option to turn off the confirmation
 queries in case you want unconditional, fully automatic removal.
 
-For processing, the default ask whether to remove or keep the whitespace
+For processing, the default asks whether to remove or keep the whitespace
 (either for the current buffer, or all buffers in the entire Vim session, or
 for the current buffer across time and Vim sessions).
 Alternatively, the plugin can just abort the write, unless ! is given:
@@ -151,6 +151,8 @@ HISTORY
 - CHG: g:DeleteTrailingWhitespace\_ChoiceAffectsHighlighting now is a List of
   possible responses that if missing will keep the highlighting for that
   particular response.
+- BUG: DeleteTrailingWhitespace\_Action checks window-local instead of
+  buffer-local override. Thanks to Enno for noticing.
 - Add dependency to ingo-library ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)).
 
 __You need to separately install ingo-library ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)) version
@@ -188,7 +190,7 @@ without the multi-line function error.
 - Started development.
 
 ------------------------------------------------------------------------------
-Copyright: (C) 2012-2019 Ingo Karkat -
+Copyright: (C) 2012-2020 Ingo Karkat -
 The [VIM LICENSE](http://vimdoc.sourceforge.net/htmldoc/uganda.html#license) applies to this plugin.
 
-Maintainer:     Ingo Karkat <ingo@karkat.de>
+Maintainer:     Ingo Karkat &lt;ingo@karkat.de&gt;

@@ -4,7 +4,7 @@
 "   - ingo-library.vim plugin
 "   - ShowTrailingWhitespace.vim plugin (optional)
 "
-" Copyright: (C) 2012-2019 Ingo Karkat
+" Copyright: (C) 2012-2020 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -98,7 +98,7 @@ function! s:GetFilespec()
     return ingo#fs#path#Canonicalize(expand('%:p'))
 endfunction
 function! s:GetAction()
-    return ingo#plugin#setting#GetWindowLocal('DeleteTrailingWhitespace_Action')
+    return ingo#plugin#setting#GetBufferLocal('DeleteTrailingWhitespace_Action')
 endfunction
 function! s:RecallResponse()
     " For the response, the global settings takes precedence over the local one.
