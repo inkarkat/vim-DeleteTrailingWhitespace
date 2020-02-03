@@ -134,7 +134,7 @@ https://github.com/inkarkat/vim-DeleteTrailingWhitespace/issues or email
 HISTORY
 ------------------------------------------------------------------------------
 
-##### 1.10    RELEASEME
+##### 1.10    03-Feb-2020
 - ENH: Add "Forever" and "Never ever" choices that persist the response for
   the current file across Vim session.
 - ENH: If ShowTrailingWhitespace.vim (version 1.10 or higher) is installed,
