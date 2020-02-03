@@ -4,49 +4,10 @@
 "   - ingo-library.vim plugin
 "   - ShowTrailingWhitespace.vim plugin (optional)
 "
-" Copyright: (C) 2012-2019 Ingo Karkat
+" Copyright: (C) 2012-2020 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
-"
-" REVISION	DATE		REMARKS
-"   1.10.009	09-Feb-2019	Change "Never ever" to "Never ever highlight" to
-"                               be more precise what's happening.
-"                               Add "Forever" and "Never ever" choices that
-"                               persist the response for the current file across
-"                               Vim session.
-"                               Use special "... recalled" responses for lookups
-"                               from persisted values.
-"                               Add s:IsChoiceAffectsHighlighting(), pass it the
-"                               current response, so that the switch can be made
-"                               based on it.
-"   1.10.008	05-Feb-2019	Use ingo-library's
-"                               ingo#plugin#setting#GetBufferLocal().
-"                               DeleteTrailingWhitespace#Get() and make
-"                               DeleteTrailingWhitespace#GetAction()
-"                               script-local. Use ingo#query#ConfirmAsText() to
-"                               be able to replace the choice numbers with the
-"                               actual chosen text.
-"                               ENH: Add "Never ever" choice that leverages
-"                               ShowTrailingWhitespace.vim's new persistence
-"                               feature.
-"   1.06.007	23-Feb-2015	FIX: Warning for nomodifiable buffer does not
-"				consider buffer-local
-"				b:DeleteTrailingWhitespace_Action.
-"   1.05.006	13-Nov-2014	Corner case: Avoid "E21: Cannot make changes,
-"				'modifiable' is off" on a nomodifiable buffer
-"				when g:DeleteTrailingWhitespace_Action =
-"				'delete', and instead just show a warning.
-"   1.04.005	03-Dec-2013	Handle local exception regular expressions that
-"				contain a "/" character. This must be escaped
-"				for the :substitute/ command.
-"   1.04.004	07-Aug-2013	Minor: Change error message wording slightly to
-"				be more consistent with Vim's original.
-"   1.02.003	14-Apr-2012	FIX: Avoid polluting search history.
-"   1.00.002	14-Mar-2012	Support turning off highlighting of trailing
-"				whitespace when the user answers the query with
-"				"Never" or "Nowhere".
-"	001	05-Mar-2012	file creation
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -98,14 +59,14 @@ function! s:GetFilespec()
     return ingo#fs#path#Canonicalize(expand('%:p'))
 endfunction
 function! s:GetAction()
-    return ingo#plugin#setting#GetWindowLocal('DeleteTrailingWhitespace_Action')
+    return ingo#plugin#setting#GetBufferLocal('DeleteTrailingWhitespace_Action')
 endfunction
 function! s:RecallResponse()
     " For the response, the global settings takes precedence over the local one.
     if exists('g:DeleteTrailingWhitespace_Response')
-	return (g:DeleteTrailingWhitespace_Response ? 'Nowhere' : 'Anywhere')
+	return (g:DeleteTrailingWhitespace_Response ? 'Anywhere' : 'Nowhere')
     elseif exists('b:DeleteTrailingWhitespace_Response')
-	return (b:DeleteTrailingWhitespace_Response ? 'Never' : 'Always')
+	return (b:DeleteTrailingWhitespace_Response ? 'Always' : 'Never')
     elseif exists('g:DELETETRAILINGWHITESPACE_RESPONSES')
 	let l:persistedResponses = ingo#plugin#persistence#Load('DELETETRAILINGWHITESPACE_RESPONSES', {})
 	let l:filespec = s:GetFilespec()
