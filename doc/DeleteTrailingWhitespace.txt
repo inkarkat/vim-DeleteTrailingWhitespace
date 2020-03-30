@@ -46,6 +46,9 @@ flexible.
   ^M and sequential whitespacw between words.
 - strip_trailing_whitespace.vim (vimscript #5695) is another alternative which
   offers a command and configurable mappings.
+- vim-strip-trailing-whitespace (vimscript #5867) limits the automatic
+  adaptation to edited lines, to avoid introducing additional changes into the
+  diff.
 
 ==============================================================================
 USAGE					      *DeleteTrailingWhitespace-usage*
